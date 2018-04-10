@@ -1,7 +1,10 @@
 package com.in28minutes.database.databasedemo.jpa;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
@@ -15,24 +18,25 @@ public class PersonJpaRepository {
 	@PersistenceContext
 	EntityManager entityManager;
 
+	public List<Person> findAll() {
+		TypedQuery<Person> namedQuery = entityManager.createNamedQuery("find all person", Person.class);
+		return namedQuery.getResultList();
+	}
+
 	public Person findById(int id) {
 		return entityManager.find(Person.class, id);
 	}
 
-	/*
-	 *
-	 *
-	 * public int deleteById(int id) { return
-	 * jdbcTemplate.update("DELETE FROM person WHERE id=?", new Object[] { id }); }
-	 *
-	 * public int insert(Person person) { return jdbcTemplate.
-	 * update("INSERT INTO person (id,name, location, birth_date) VALUES (?, ?, ?, ?)"
-	 * , new Object[] { person.getId(), person.getName(), person.getLocation(), new
-	 * Timestamp(person.getBirthDate().getTime()) }); }
-	 *
-	 * public int update(Person person) { return jdbcTemplate.
-	 * update("UPDATE person SET name = ?, location = ?, birth_date = ? WHERE id = ?"
-	 * , new Object[] { person.getName(), person.getLocation(), new
-	 * Timestamp(person.getBirthDate().getTime()), person.getId() }); }
-	 */
+	public Person update(Person person) {
+		return entityManager.merge(person);
+	}
+
+	public Person insert(Person person) {
+		return entityManager.merge(person);
+	}
+
+	public void deleteById(int id) {
+		Person person = findById(id);
+		entityManager.remove(person);
+	}
 }
